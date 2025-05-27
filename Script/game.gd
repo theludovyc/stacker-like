@@ -4,13 +4,26 @@ const x_max = 10
 
 const length = 3
 
+const max_level = 9
+
 @onready var tilemap : TileMapLayer = $TileMapLayer
+@onready var timer : Timer = $Timer
+
+@export var cooldown_curve : Curve
 
 var x_head := 2
 
-var y_head := 3
+var y_head := 9
 
 var direction := true
+
+var level := 0.0
+
+func get_cooldown() -> float:
+	return cooldown_curve.sample(level / max_level)
+
+func _ready() -> void:
+	timer.start(get_cooldown())
 
 func _process(delta_: float) -> void:
 	if Input.is_action_just_pressed("ui_accept"):
@@ -19,6 +32,12 @@ func _process(delta_: float) -> void:
 		direction = true
 		
 		y_head -= 1
+		
+		level += 1
+		
+		timer.start(get_cooldown())
+		
+		tilemap.set_cell(Vector2i(x_head, y_head), 0, Vector2i(2, 0))
 
 func _on_timer_timeout() -> void:
 	if direction:
