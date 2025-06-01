@@ -2,7 +2,7 @@ extends Node
 
 const x_max = 10
 
-const length = 3
+const max_length = 3
 
 const max_level = 9
 
@@ -11,9 +11,11 @@ const max_level = 9
 
 @export var cooldown_curve : Curve
 
+var length := max_length
+
 var x_head := 2
 
-var y_head := 9
+var y_head := max_level
 
 var direction := true
 
@@ -27,6 +29,25 @@ func _ready() -> void:
 
 func _process(delta_: float) -> void:
 	if Input.is_action_just_pressed("ui_accept"):
+		if y_head < max_level:
+			var index := 0
+			
+			for l in length:
+				var lower_tile_atlas_coord = tilemap.get_cell_atlas_coords(Vector2i(x_head + index, y_head + 1))
+			
+				if lower_tile_atlas_coord == Vector2i(-1, -1):
+					tilemap.erase_cell(Vector2i(x_head + index, y_head))
+					
+					length -= 1
+					
+					if length == 0:
+						get_tree().quit()
+						
+				if direction:
+					index -= 1
+				else:
+					index +=1
+		
 		x_head = 2
 		
 		direction = true
